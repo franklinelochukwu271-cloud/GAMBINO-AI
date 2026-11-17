@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "GAMBINO AI",
+    "slug": "gambino-ai",
+    "scheme": "gambino",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "GAMBINO uses your microphone only when you activate voice interaction.",
+        "NSSpeechRecognitionUsageDescription": "GAMBINO converts your speech to text when you activate voice interaction."
+      }
+    },
+    "android": {
+      "permissions": [
+        "RECORD_AUDIO",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow GAMBINO AI to use your microphone when you choose voice interaction.",
+          "speechRecognitionPermission": "Allow GAMBINO AI to convert your speech into text."
+        }
+      ]
+    ]
+  }
+}
