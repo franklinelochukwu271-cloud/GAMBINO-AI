@@ -31,7 +31,7 @@ export default function App() {
 
         <View style={styles.intro}>
           <Text style={styles.kicker}>YOUR PERSONAL INTELLIGENCE</Text>
-          <Text style={styles.heading}>Hello, Commander.</Text>
+          <Text style={styles.heading}>Hello, Dear.</Text>
         </View>
 
         <OrbitView state={assistant.state} />
