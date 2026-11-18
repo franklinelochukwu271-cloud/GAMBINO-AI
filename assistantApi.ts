@@ -1,4 +1,8 @@
 import { getLocalResponse } from "./gambinoCore";
+import {
+  addMessage,
+  getConversation,
+} from "./conversationMemory";
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
 
@@ -13,14 +17,24 @@ export async function askAssistant(
     };
   }
 
-  // Local GAMBINO intelligence
+  // Store user message
+  addMessage("user", cleanMessage);
+
+  // Get conversation history
+  const history = getConversation();
+
+  // Local intelligence mode
   if (!API_BASE) {
+    const answer = getLocalResponse(cleanMessage);
+
+    addMessage("assistant", answer);
+
     return {
-      text: getLocalResponse(cleanMessage),
+      text: answer,
     };
   }
 
-  // Connected AI backend
+  // Connected AI mode
   try {
     const response = await fetch(
       `${API_BASE}/v1/assistant/message`,
@@ -31,6 +45,8 @@ export async function askAssistant(
         },
         body: JSON.stringify({
           message: cleanMessage,
+          conversation: history,
+          assistant: "GAMBINO AI",
         }),
       }
     );
@@ -39,13 +55,27 @@ export async function askAssistant(
       throw new Error("AI connection failed");
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    const answer = data.text ?? "I'm listening, Commander.";
+
+    // Store assistant response
+    addMessage("assistant", answer);
+
+    return {
+      text: answer,
+    };
 
   } catch (error) {
     console.error("GAMBINO API error:", error);
 
+    const answer =
+      "My intelligence connection is currently unavailable, Commander.";
+
+    addMessage("assistant", answer);
+
     return {
-      text: "My intelligence connection is currently unavailable, Commander.",
+      text: answer,
     };
   }
 }
