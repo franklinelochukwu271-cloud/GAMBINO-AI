@@ -1,0 +1,67 @@
+import { clearConversation } from "./conversationMemory";
+
+export type GambinoCommand = {
+  name: string;
+  description: string;
+  execute: () => string;
+};
+
+export function processCommand(
+  message: string
+): string | null {
+  const input = message.toLowerCase().trim();
+
+  // Help command
+  if (
+    input === "help" ||
+    input.includes("what commands")
+  ) {
+    return `
+GAMBINO COMMAND CENTER
+
+Available commands:
+
+• Help — Show available commands
+• Time — Tell the current time
+• Date — Tell today's date
+• Status — Check GAMBINO status
+• Clear conversation — Reset conversation memory
+• Motivation — Receive motivation
+
+Voice and touch interaction are supported.
+    `.trim();
+  }
+
+  // Time command
+  if (input === "time" || input.includes("what time is it")) {
+    return `Commander, the time is ${new Date().toLocaleTimeString()}.`;
+  }
+
+  // Date command
+  if (input === "date" || input.includes("today's date")) {
+    return `Commander, today is ${new Date().toLocaleDateString()}.`;
+  }
+
+  // Status command
+  if (input === "status" || input.includes("system status")) {
+    return "GAMBINO AI is operational. Personality engine, conversation memory, voice interface and ORBIT interface are initialized. Full AI backend connection is pending.";
+  }
+
+  // Clear memory command
+  if (
+    input === "clear conversation" ||
+    input === "clear memory" ||
+    input === "reset conversation"
+  ) {
+    clearConversation();
+
+    return "Conversation memory cleared, Commander.";
+  }
+
+  // Motivation command
+  if (input.includes("motivation")) {
+    return "Commander, your vision requires discipline, consistency and execution. Focus on the next step. Progress is built one action at a time.";
+  }
+
+  return null;
+}
