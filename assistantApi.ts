@@ -1,4 +1,5 @@
 import { getLocalResponse } from "./gambinoCore";
+import { processCommand } from "./gambinoCommands";
 
 import {
   addMessage,
@@ -20,9 +21,20 @@ export async function askAssistant(
 
   addMessage("user", cleanMessage);
 
+  // Process system commands first
+  const commandResponse = processCommand(cleanMessage);
+
+  if (commandResponse !== null) {
+    addMessage("assistant", commandResponse);
+
+    return {
+      text: commandResponse,
+    };
+  }
+
   const history = getConversation();
 
-  // Local intelligence
+  // Local intelligence mode
   if (!API_BASE) {
     const answer = getLocalResponse(
       cleanMessage,
@@ -36,7 +48,7 @@ export async function askAssistant(
     };
   }
 
-  // AI backend
+  // AI backend mode
   try {
     const response = await fetch(
       `${API_BASE}/v1/assistant/message`,
