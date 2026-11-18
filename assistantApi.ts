@@ -1,4 +1,5 @@
 import { getLocalResponse } from "./gambinoCore";
+
 import {
   addMessage,
   getConversation,
@@ -17,15 +18,16 @@ export async function askAssistant(
     };
   }
 
-  // Store user message
   addMessage("user", cleanMessage);
 
-  // Get conversation history
   const history = getConversation();
 
-  // Local intelligence mode
+  // Local intelligence
   if (!API_BASE) {
-    const answer = getLocalResponse(cleanMessage);
+    const answer = getLocalResponse(
+      cleanMessage,
+      history
+    );
 
     addMessage("assistant", answer);
 
@@ -34,7 +36,7 @@ export async function askAssistant(
     };
   }
 
-  // Connected AI mode
+  // AI backend
   try {
     const response = await fetch(
       `${API_BASE}/v1/assistant/message`,
@@ -47,6 +49,7 @@ export async function askAssistant(
           message: cleanMessage,
           conversation: history,
           assistant: "GAMBINO AI",
+          personality: "futuristic",
         }),
       }
     );
@@ -57,14 +60,12 @@ export async function askAssistant(
 
     const data = await response.json();
 
-    const answer = data.text ?? "I'm listening, Commander.";
+    const answer =
+      data.text || "I'm listening, Commander.";
 
-    // Store assistant response
     addMessage("assistant", answer);
 
-    return {
-      text: answer,
-    };
+    return { text: answer };
 
   } catch (error) {
     console.error("GAMBINO API error:", error);
@@ -74,8 +75,6 @@ export async function askAssistant(
 
     addMessage("assistant", answer);
 
-    return {
-      text: answer,
-    };
+    return { text: answer };
   }
 }
