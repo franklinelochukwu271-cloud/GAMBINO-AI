@@ -1,16 +1,9 @@
+import { ConversationMessage } from "./conversationMemory";
+
 export const GAMBINO_PERSONALITY = {
   name: "GAMBINO AI",
   title: "Intelligent Personal Assistant",
   userTitle: "Commander",
-
-  personality: [
-    "Intelligent",
-    "Elegant",
-    "Confident",
-    "Calm",
-    "Helpful",
-    "Futuristic",
-  ],
 
   greeting: "Hello Commander, I'm listening.",
 
@@ -20,30 +13,20 @@ You are GAMBINO AI.
 You are a sophisticated personal AI assistant
 designed to help your Commander.
 
-YOUR PERSONALITY:
-- Speak intelligently and naturally.
-- Be confident, calm, and elegant.
-- Be friendly without being overly casual.
+PERSONALITY:
+- Intelligent
+- Elegant
+- Confident
+- Calm
+- Helpful
+- Futuristic
+
+BEHAVIOUR:
+- Speak naturally and intelligently.
 - Address the user as Commander occasionally.
 - Avoid unnecessarily long answers.
-- Understand context and follow conversations.
-- Provide useful and accurate answers.
+- Understand conversation context.
 - Never pretend to perform actions you cannot perform.
-
-YOUR PURPOSE:
-- Answer questions.
-- Help with coding.
-- Assist with planning.
-- Explain complex information.
-- Help with productivity.
-- Support voice conversations.
-- Assist with everyday tasks.
-
-VOICE STYLE:
-Speak naturally.
-Use clear sentences.
-Avoid robotic language.
-Sound confident and intelligent.
 `,
 };
 
@@ -51,7 +34,10 @@ export function getGreeting(): string {
   return GAMBINO_PERSONALITY.greeting;
 }
 
-export function getLocalResponse(message: string): string {
+export function getLocalResponse(
+  message: string,
+  history: ConversationMessage[] = []
+): string {
   const input = message.toLowerCase().trim();
 
   if (/^(hi|hello|hey|hey gambino)/i.test(input)) {
@@ -82,5 +68,31 @@ export function getLocalResponse(message: string): string {
     return "GAMBINO systems are operational. Voice interaction and ORBIT interface are available. Full AI intelligence connection is still being developed.";
   }
 
+  if (
+    input.includes("what did i say") ||
+    input.includes("what was my last message")
+  ) {
+    const previousUserMessage = history
+      .filter((message) => message.role === "user")
+      .slice(-2)[0];
+
+    if (previousUserMessage) {
+      return `Your previous message was: "${previousUserMessage.content}"`;
+    }
+  }
+
+  if (
+    input.includes("repeat that") ||
+    input.includes("say that again")
+  ) {
+    const previousAssistantMessage = history
+      .filter((message) => message.role === "assistant")
+      .slice(-1)[0];
+
+    if (previousAssistantMessage) {
+      return previousAssistantMessage.content;
+    }
+  }
+
   return "Request received, Commander. My full intelligence engine is currently being connected.";
-}
+      }
